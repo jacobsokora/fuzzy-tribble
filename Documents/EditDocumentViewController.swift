@@ -15,6 +15,7 @@ class EditDocumentViewController: UIViewController {
     @IBOutlet weak var documentArea: UITextView!
     
     var document: Document?
+    var category: Category?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -46,6 +47,8 @@ class EditDocumentViewController: UIViewController {
         data.content = content
         data.lastModified = Date()
         data.size = Double(content.lengthOfBytes(using: .utf8))
+        data.category = category
+        category?.addToDocuments(data)
         do {
             try context.save()
         } catch {

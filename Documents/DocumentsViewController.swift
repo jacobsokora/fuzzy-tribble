@@ -13,7 +13,7 @@ class DocumentsViewController: UIViewController {
     
     @IBOutlet weak var documentsTableView: UITableView!
     
-    let fileManager = FileManager.default
+    var category: Category?
     var documents: [Document] = []
     let dateFormatter = DateFormatter()
 
@@ -23,6 +23,8 @@ class DocumentsViewController: UIViewController {
         documentsTableView.dataSource = self
         documentsTableView.delegate = self
         
+        self.title = category?.name
+        
         dateFormatter.dateStyle = .short
         dateFormatter.timeStyle = .short
     }
@@ -30,16 +32,7 @@ class DocumentsViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         documents.removeAll()
-        let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Document")
-        request.returnsObjectsAsFaults = false
-        do {
-            let appDelegate = UIApplication.shared.delegate as! AppDelegate
-            let context = appDelegate.persistentContainer.viewContext
-            let results = try context.fetch(request)
-            documents = results as! [Document]
-        } catch {
-            print("Failed to load documents from core data: \(error.localizedDescription)")
-        }
+        documents = category?.documents?.allObjects as! [Document]
         documentsTableView.reloadData()
     }
 
@@ -49,9 +42,12 @@ class DocumentsViewController: UIViewController {
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let selected = documentsTableView.indexPathForSelectedRow, let destination = segue.destination as? EditDocumentViewController {
-            let document = documents[selected.row]
-            destination.document = document
+        if let destination = segue.destination as? EditDocumentViewController {
+            if let selected = documentsTableView.indexPathForSelectedRow {
+                let document = documents[selected.row]
+                destination.document = document
+            }
+            destination.category = category
         }
     }
 }

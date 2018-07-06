@@ -17,6 +17,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+//        let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Document")
+//        request.returnsObjectsAsFaults = false
+//        do {
+//            let appDelegate = UIApplication.shared.delegate as! AppDelegate
+//            let context = appDelegate.persistentContainer.viewContext
+//            context.mergePolicy = NSOverwriteMergePolicy
+//            let results = try context.fetch(request)
+//            for document in results as! [Document] {
+//                context.delete(document)
+//                try context.save()
+//            }
+//        } catch {
+//            print("Failed to delete document: \(error.localizedDescription)")
+//        }
         return true
     }
 

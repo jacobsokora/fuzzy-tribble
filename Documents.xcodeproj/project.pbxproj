@@ -15,6 +15,7 @@
 		160B868C20CCA09300AC6905 /* DocumentsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 160B868B20CCA09300AC6905 /* DocumentsTableViewCell.swift */; };
 		160B868E20CCA0A100AC6905 /* EditDocumentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 160B868D20CCA0A100AC6905 /* EditDocumentViewController.swift */; };
 		16F717F520F00C7F00359DD0 /* Documents.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 16F717F320F00C7F00359DD0 /* Documents.xcdatamodeld */; };
+		16F717F720F0191D00359DD0 /* CategoriesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16F717F620F0191D00359DD0 /* CategoriesViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +29,7 @@
 		160B868B20CCA09300AC6905 /* DocumentsTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentsTableViewCell.swift; sourceTree = "<group>"; };
 		160B868D20CCA0A100AC6905 /* EditDocumentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditDocumentViewController.swift; sourceTree = "<group>"; };
 		16F717F420F00C7F00359DD0 /* Documents_Core_Data.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Documents_Core_Data.xcdatamodel; sourceTree = "<group>"; };
+		16F717F620F0191D00359DD0 /* CategoriesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoriesViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -69,6 +71,7 @@
 				160B868B20CCA09300AC6905 /* DocumentsTableViewCell.swift */,
 				160B868D20CCA0A100AC6905 /* EditDocumentViewController.swift */,
 				16F717F320F00C7F00359DD0 /* Documents.xcdatamodeld */,
+				16F717F620F0191D00359DD0 /* CategoriesViewController.swift */,
 			);
 			path = Documents;
 			sourceTree = "<group>";
@@ -146,6 +149,7 @@
 			files = (
 				160B868C20CCA09300AC6905 /* DocumentsTableViewCell.swift in Sources */,
 				160B867C20CC870100AC6905 /* DocumentsViewController.swift in Sources */,
+				16F717F720F0191D00359DD0 /* CategoriesViewController.swift in Sources */,
 				16F717F520F00C7F00359DD0 /* Documents.xcdatamodeld in Sources */,
 				160B868E20CCA0A100AC6905 /* EditDocumentViewController.swift in Sources */,
 				160B867A20CC870100AC6905 /* AppDelegate.swift in Sources */,
