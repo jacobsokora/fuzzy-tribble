@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CoreData
 
 class EditDocumentViewController: UIViewController {
     
@@ -24,9 +25,7 @@ class EditDocumentViewController: UIViewController {
         }
         
         nameField.text = document.name
-        if let dataBuffer = FileManager.default.contents(atPath: document.name) {
-            documentArea.text = String(data: dataBuffer, encoding: .utf8) ?? ""
-        }
+        documentArea.text = document.content
     }
 
     override func didReceiveMemoryWarning() {
@@ -38,7 +37,20 @@ class EditDocumentViewController: UIViewController {
         guard let fileName = nameField.text, fileName.count > 0, let content = documentArea.text, content.count > 0 else {
             return
         }
-        FileManager.default.createFile(atPath: fileName, contents: content.data(using: .utf8), attributes: nil)
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        let context = appDelegate.persistentContainer.viewContext
+        context.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy
+        let entity = NSEntityDescription.entity(forEntityName: "Document", in: context)
+        let data = Document(entity: entity!, insertInto: context)
+        data.name = fileName
+        data.content = content
+        data.lastModified = Date()
+        data.size = Double(content.lengthOfBytes(using: .utf8))
+        do {
+            try context.save()
+        } catch {
+            print("Failed to save document: \(error.localizedDescription)")
+        }
         navigationController?.popViewController(animated: true)
     }
     

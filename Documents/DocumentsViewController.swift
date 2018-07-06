@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CoreData
 
 class DocumentsViewController: UIViewController {
     
@@ -24,23 +25,20 @@ class DocumentsViewController: UIViewController {
         
         dateFormatter.dateStyle = .short
         dateFormatter.timeStyle = .short
-        
-        let directory = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0].path
-        if !fileManager.changeCurrentDirectoryPath(directory) {
-            fatalError("Could not open application document directory!")
-        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         documents.removeAll()
+        let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Document")
+        request.returnsObjectsAsFaults = false
         do {
-            for fileName in try fileManager.contentsOfDirectory(atPath: ".") {
-                let attributes = try fileManager.attributesOfItem(atPath: fileName)
-                documents.append(Document(name: fileName, size: attributes[FileAttributeKey.size] as! Int, lastModified: attributes[FileAttributeKey.modificationDate] as! Date))
-            }
+            let appDelegate = UIApplication.shared.delegate as! AppDelegate
+            let context = appDelegate.persistentContainer.viewContext
+            let results = try context.fetch(request)
+            documents = results as! [Document]
         } catch {
-            print(error.localizedDescription)
+            print("Failed to load documents from core data: \(error.localizedDescription)")
         }
         documentsTableView.reloadData()
     }
@@ -72,7 +70,7 @@ extension DocumentsViewController: UITableViewDataSource {
         let document = documents[indexPath.row]
         cell.nameLabel.text = document.name
         cell.sizeLabel.text = "\(document.size) bytes"
-        cell.timeLabel.text = "Modified: \(dateFormatter.string(from: document.lastModified))"
+        cell.timeLabel.text = "Modified: \(dateFormatter.string(from: document.lastModified!))"
         return cell
     }
 }
@@ -86,12 +84,16 @@ extension DocumentsViewController: UITableViewDelegate {
         let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { (ac: UIContextualAction, view: UIView, success: (Bool) -> Void) in
             let document = self.documents[indexPath.row]
             do {
-                try self.fileManager.removeItem(atPath: document.name)
+                let appDelegate = UIApplication.shared.delegate as! AppDelegate
+                let context = appDelegate.persistentContainer.viewContext
+                context.mergePolicy = NSOverwriteMergePolicy
+                context.delete(document)
+                try context.save()
                 self.documents.remove(at: indexPath.row)
                 success(true)
                 self.documentsTableView.reloadData()
             } catch {
-                print(error.localizedDescription)
+                print("Failed to delete document: \(error.localizedDescription)")
                 success(false)
             }
         }
