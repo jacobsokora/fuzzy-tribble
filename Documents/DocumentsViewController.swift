@@ -13,27 +13,57 @@ class DocumentsViewController: UIViewController {
     
     @IBOutlet weak var documentsTableView: UITableView!
     
-    var category: Category?
     var documents: [Document] = []
     let dateFormatter = DateFormatter()
-
+    
+    let searchController = UISearchController(searchResultsController: nil)
+    var selectedScope = SearchScope.all
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         documentsTableView.dataSource = self
         documentsTableView.delegate = self
         
-        self.title = category?.name
-        
         dateFormatter.dateStyle = .short
         dateFormatter.timeStyle = .short
+        
+        searchController.searchResultsUpdater = self
+        searchController.searchBar.delegate = self
+        searchController.obscuresBackgroundDuringPresentation = false
+        searchController.searchBar.placeholder = "Search Documents"
+        
+        navigationItem.searchController = searchController
+        definesPresentationContext = true
+        
+        searchController.searchBar.scopeButtonTitles = SearchScope.titles
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        documents.removeAll()
-        documents = category?.documents?.allObjects as! [Document]
-        documentsTableView.reloadData()
+        getDocuments(with: "")
+    }
+    
+    func getDocuments(with query: String) {
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        let context = appDelegate.persistentContainer.viewContext
+        let fetchRequest = NSFetchRequest<Document>(entityName: "Document")
+        do {
+            if query != "" {
+                switch selectedScope {
+                case .all:
+                    fetchRequest.predicate = NSPredicate(format: "name contains[c] %@ OR content contains[c] %@", query, query)
+                case .name:
+                    fetchRequest.predicate = NSPredicate(format: "name contains[c] %@", query)
+                case.content:
+                    fetchRequest.predicate = NSPredicate(format:"content contains[c] %@", query)
+                }
+            }
+            documents = try context.fetch(fetchRequest)
+            documentsTableView.reloadData()
+        } catch {
+            print("Failed to fetch document data: \(error.localizedDescription)")
+        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -47,7 +77,6 @@ class DocumentsViewController: UIViewController {
                 let document = documents[selected.row]
                 destination.document = document
             }
-            destination.category = category
         }
     }
 }
@@ -94,5 +123,20 @@ extension DocumentsViewController: UITableViewDelegate {
             }
         }
         return UISwipeActionsConfiguration(actions: [deleteAction])
+    }
+}
+
+extension DocumentsViewController: UISearchResultsUpdating {
+    func updateSearchResults(for searchController: UISearchController) {
+        getDocuments(with: searchController.searchBar.text ?? "")
+    }
+}
+
+extension DocumentsViewController: UISearchBarDelegate {
+    func searchBar(_ searchBar: UISearchBar, selectedScopeButtonIndexDidChange selectedScope: Int) {
+        self.selectedScope = SearchScope.scopes[selectedScope]
+        if let searchTerm = searchBar.text {
+            getDocuments(with: searchTerm)
+        }
     }
 }
